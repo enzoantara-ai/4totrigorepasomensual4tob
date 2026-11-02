@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reto Final de Trigonometría · 4.º de secundaria</title>
+<meta name="description" content="Juego de 10 preguntas: ángulo triple, suma a producto y producto a suma. Juega las veces que quieras.">
+<style>
+:root{
+  --bg:#F6F8FC; --card:#FFFFFF; --ink:#16233F; --muted:#56627C; --line:#D5DDEB;
+  --pen:#1F4FB4; --pen-ink:#FFFFFF; --soft:#E6EEFB; --gold:#B45309; --goldbg:#FDEBD0;
+  --ok:#17794A; --okbg:#E2F5EA; --bad:#B3261E; --badbg:#FCE8E6; --focus:#F2A900;
+  --serif:"Cambria Math","STIX Two Math",Cambria,Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0F1727; --card:#18233B; --ink:#E7ECF8; --muted:#A3AECB; --line:#34425F;
+    --pen:#8FB0FF; --pen-ink:#0F1727; --soft:#22304D; --gold:#FBBF24; --goldbg:#3B2A12;
+    --ok:#62D39A; --okbg:#12301F; --bad:#FF8E86; --badbg:#3A1A1A; --focus:#FFC53D;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--sans)}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 56px}
+h1{font-family:var(--serif);font-size:clamp(1.6rem,5vw,2.2rem);line-height:1.15;margin:.2rem 0 .3rem;color:var(--pen)}
+h2{font-size:1.2rem;margin:1.2rem 0 .5rem}
+h3{font-size:1.05rem;margin:.9rem 0 .3rem}
+p{margin:.4rem 0 .8rem}
+.sub{color:var(--muted);margin:0 0 1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.hidden{display:none !important}
+button{font:inherit;cursor:pointer}
+button:focus-visible,summary:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.btn{background:var(--pen);color:var(--pen-ink);border:0;border-radius:12px;padding:12px 22px;font-weight:700;min-height:48px}
+.btn:hover{filter:brightness(1.1)}
+.btn.alt{background:transparent;color:var(--pen);border:2px solid var(--pen)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+label{font-weight:600;display:block;margin-bottom:4px}
+input[type=text]{width:100%;max-width:340px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font:inherit;background:var(--card);color:var(--ink)}
+details{margin:12px 0;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+details>summary{cursor:pointer;padding:11px 14px;font-weight:700;color:var(--pen)}
+details>.in{padding:0 16px 14px}
+.steps{margin:.3rem 0 .6rem;padding-left:1.3rem}
+.steps li{margin:.35rem 0}
+.f{font-family:var(--serif);background:var(--soft);border-radius:10px;padding:8px 12px;margin:6px 0;font-size:1.05rem;overflow-wrap:anywhere}
+.tag{display:inline-block;background:var(--goldbg);color:var(--gold);border-radius:999px;padding:1px 10px;font-size:.85rem;font-weight:700}
+.top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;font-weight:600}
+.pill{background:var(--soft);color:var(--pen);border-radius:999px;padding:2px 12px;font-size:.95rem}
+.bar{height:10px;background:var(--line);border-radius:999px;overflow:hidden;margin-bottom:16px}
+.bar>i{display:block;height:100%;width:0;background:var(--pen);transition:width .35s}
+.q{font-family:var(--serif);font-size:clamp(1.2rem,4.2vw,1.5rem);line-height:1.4;font-weight:600;margin:.2rem 0 1rem}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .3em;text-align:center}
+.frac>span:first-child{border-bottom:2px solid currentColor;padding:0 .35em .1em}
+.frac>span:last-child{padding:.1em .35em 0}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);color:var(--ink);
+  border:2px solid var(--line);border-radius:12px;padding:12px 14px;font-family:var(--serif);font-size:1.12rem;min-height:52px}
+.opt:hover:not(:disabled){border-color:var(--pen)}
+.opt .k{flex:none;width:2rem;height:2rem;border-radius:50%;background:var(--soft);color:var(--pen);display:grid;place-items:center;font:700 .95rem var(--sans)}
+.opt .t{flex:1}
+.opt:disabled{cursor:default}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}
+.opt.bad{background:var(--badbg);border-color:var(--bad)}
+.opt.dim{opacity:.55}
+.fb{margin-top:16px;border-radius:12px;padding:12px 14px;border-left:5px solid var(--line);background:var(--soft)}
+.fb.ok{border-left-color:var(--ok);background:var(--okbg)}
+.fb.bad{border-left-color:var(--bad);background:var(--badbg)}
+.fb h3{margin:0 0 4px}
+.fb.ok h3{color:var(--ok)} .fb.bad h3{color:var(--bad)}
+.fb p{margin:.2rem 0;font-family:var(--serif);font-size:1.05rem}
+.score{font-family:var(--serif);font-size:clamp(2.6rem,11vw,3.6rem);line-height:1;color:var(--pen);font-weight:700;margin:.2rem 0}
+.rate{font-size:1.2rem;font-weight:700;margin:.2rem 0}
+.sol{border:1px solid var(--line);border-left:5px solid var(--pen);border-radius:10px;background:var(--card);padding:10px 14px;margin:10px 0}
+.sol .n{font-weight:700}
+.sol .a{font-family:var(--serif);font-weight:700;color:var(--ok)}
+.sol .w{font-family:var(--serif)}
+.sol .st{font-size:.92rem;color:var(--muted)}
+@media (max-width:480px){body{font-size:16px}.card{padding:16px}}
+@media (prefers-reduced-motion:reduce){.bar>i{transition:none}}
+@media print{.btn,.row button{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- INICIO -->
+<section id="s-start">
+  <div class="card">
+    <h1>Reto Final de Trigonometría</h1>
+    <p class="sub">Ángulo triple · De suma a producto · De producto a suma · 4.º de secundaria</p>
+    <ul class="steps">
+      <li><b>10 preguntas</b> con 4 alternativas cada una.</li>
+      <li>Después de responder verás la explicación paso a paso.</li>
+      <li>Puedes jugar <b>todas las veces que quieras</b>: las alternativas cambian de lugar en cada partida.</li>
+      <li>Al final verás el <b>solucionario completo</b> con las 10 respuestas.</li>
+    </ul>
+
+    <details open>
+      <summary>🎯 Dinámica: cómo jugar (léela antes de empezar)</summary>
+      <div class="in">
+        <h3>Lo que necesitas</h3>
+        <p>Una hoja, un lápiz y este juego en tu celular o computadora.</p>
+        <h3>Paso a paso</h3>
+        <ol class="steps">
+          <li><b>Primero resuelve en tu hoja.</b> Lee la pregunta y haz el ejercicio como en el examen. Recién después elige una alternativa.</li>
+          <li><b>Elige tu respuesta.</b> El juego te dirá si acertaste y te mostrará cómo se resuelve.</li>
+          <li><b>Si fallas, corrige en tu hoja.</b> Copia la fórmula o el paso que te faltó. Así aprendes de cada error.</li>
+          <li><b>Juega otra vez.</b> Cada partida mezcla las alternativas, así que no sirve memorizar la letra: tienes que saber hacerlo.</li>
+        </ol>
+        <h3>Las 3 rondas del reto</h3>
+        <ol class="steps">
+          <li><span class="tag">Ronda 1 · Con ayuda</span> Juega con el cuadro de fórmulas abierto.</li>
+          <li><span class="tag">Ronda 2 · Sin ayuda</span> Juega sin abrir el cuadro. Solo tu hoja y tu memoria.</li>
+          <li><span class="tag">Ronda 3 · Meta 10/10</span> Repite hasta lograr los 10 aciertos.</li>
+        </ol>
+        <h3>En parejas o en equipos</h3>
+        <ol class="steps">
+          <li>Un compañero <b>lee</b> la pregunta y el otro <b>calcula</b> en la hoja. Cambian de rol en cada pregunta.</li>
+          <li>Se ponen de acuerdo antes de elegir la alternativa. El equipo explica en voz alta por qué la eligió.</li>
+          <li>Al terminar, cada equipo anota su puntaje y lo compara con el de otros equipos. <b>Gana el equipo que llegue primero a 10/10 sin abrir el cuadro de fórmulas.</b></li>
+        </ol>
+        <p class="sub">Consejo: no gana el que juega más rápido, sino el que entiende por qué se usa cada fórmula.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>📘 Cuadro de fórmulas</summary>
+      <div class="in" id="cheat-start"></div>
+    </details>
+
+    <div style="margin:14px 0">
+      <label for="name">Tu nombre (opcional, aparecerá en tu resultado)</label>
+      <input id="name" type="text" maxlength="40" autocomplete="name" placeholder="Ej.: Lucía Pérez">
+    </div>
+    <div class="row">
+      <button class="btn" id="btn-start">¡Empezar el reto!</button>
+      <span id="best" class="sub" style="margin:0"></span>
+    </div>
+    <noscript><p style="color:var(--bad);font-weight:700">Necesitas activar JavaScript para jugar.</p></noscript>
+  </div>
+</section>
+
+<!-- JUEGO -->
+<section id="s-game" class="hidden">
+  <div class="top">
+    <span id="count" class="pill">Pregunta 1 de 10</span>
+    <span id="pts" class="pill">Aciertos: 0</span>
+  </div>
+  <div class="bar" aria-hidden="true"><i id="prog"></i></div>
+  <div class="card">
+    <div id="qtext" class="q" tabindex="-1"></div>
+    <div id="opts" class="opts" role="group" aria-label="Alternativas"></div>
+    <div id="fb" class="fb hidden" role="status" aria-live="polite"></div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn hidden" id="btn-next">Siguiente →</button>
+    </div>
+  </div>
+  <details>
+    <summary>📘 Cuadro de fórmulas (ayuda)</summary>
+    <div class="in" id="cheat-game"></div>
+  </details>
+</section>
+
+<!-- RESULTADO -->
+<section id="s-end" class="hidden">
+  <div class="card">
+    <p id="who" class="sub" style="margin:0"></p>
+    <div class="score" id="final"></div>
+    <div class="rate" id="rate"></div>
+    <p id="msg"></p>
+    <p id="bestline" class="sub"></p>
+    <div class="row">
+      <button class="btn" id="btn-again">Jugar otra vez</button>
+      <button class="btn alt" id="btn-home">Volver al inicio</button>
+    </div>
+  </div>
+  <h2>Solucionario: las 10 respuestas</h2>
+  <p class="sub">Compáralo con tu hoja. Los ejercicios que fallaste aparecen marcados.</p>
+  <div id="sols"></div>
+</section>
+
+</div>
+
+<script>
+"use strict";
+/* Cada pregunta: text (HTML permitido), correct, wrong (3 incorrectas), why, tema */
+var QUESTIONS = [
+  { tema: "Ángulo triple",
+    text: "¿Cuál es la identidad correcta para sen3θ?",
+    correct: "3senθ − 4sen³θ",
+    wrong: ["4sen³θ − 3senθ", "3senθ + 4sen³θ", "3senθ"],
+    why: "sen3θ = sen(θ + 2θ) y se reduce a 3senθ − 4sen³θ. Comprobación con θ = 30°: 3(1/2) − 4(1/8) = 1 = sen90°." },
+  { tema: "Ángulo triple",
+    text: "Si cosx = 1/2, ¿cuánto vale cos3x?",
+    correct: "−1",
+    wrong: ["1", "0", "−1/2"],
+    why: "cos3x = 4cos³x − 3cosx = 4(1/2)³ − 3(1/2) = 1/2 − 3/2 = −1. Con x = 60°: cos180° = −1." },
+  { tema: "Ángulo triple",
+    text: "Si tanθ = 1 (θ = 45°), ¿cuánto vale tan3θ?",
+    correct: "−1",
+    wrong: ["1", "2", "−2"],
+    why: "tan3θ = (3tanθ − tan³θ)/(1 − 3tan²θ) = (3 − 1)/(1 − 3) = 2/(−2) = −1. Comprobación: tan135° = −1." },
+  { tema: "Ángulo triple",
+    text: "La identidad de degradación para 4sen³θ es:",
+    correct: "3senθ − sen3θ",
+    wrong: ["3senθ + sen3θ", "sen3θ − 3senθ", "3sen3θ − senθ"],
+    why: "De sen3θ = 3senθ − 4sen³θ se despeja 4sen³θ = 3senθ − sen3θ." },
+  { tema: "Suma o diferencia a producto",
+    text: "Transforma a producto:<br><b>sen50° + sen10°</b>",
+    correct: "2·sen30°·cos20°",
+    wrong: ["2·sen60°·cos40°", "2·cos30°·sen20°", "2·sen30°·sen20°"],
+    why: "Seno + seno = 2·sen(semisuma)·cos(semidiferencia). Semisuma: (50° + 10°)/2 = 30°. Semidiferencia: (50° − 10°)/2 = 20°." },
+  { tema: "Suma o diferencia a producto",
+    text: "Transforma a producto:<br><b>cos20° − cos10°</b>",
+    correct: "−2·sen15°·sen5°",
+    wrong: ["2·sen15°·sen5°", "−2·cos15°·cos5°", "2·cos15°·cos5°"],
+    why: "Coseno − coseno = −2·sen(semisuma)·sen(semidiferencia). ¡Lleva signo menos y dos senos! Semisuma: 15°. Semidiferencia: 5°." },
+  { tema: "Producto a suma o diferencia",
+    text: "¿A qué es igual <b>2·cosx·cosy</b>?",
+    correct: "cos(x+y) + cos(x−y)",
+    wrong: ["cos(x−y) − cos(x+y)", "sen(x+y) + sen(x−y)", "cos(x·y)"],
+    why: "Al sumar cos(x+y) y cos(x−y) se cancelan los términos con senx·seny y quedan dos veces cosx·cosy." },
+  { tema: "Producto a suma o diferencia",
+    text: "Transforma a suma o diferencia:<br><b>2·sen5x·cos2x</b>",
+    correct: "sen7x + sen3x",
+    wrong: ["sen7x − sen3x", "cos7x + cos3x", "2·sen7x"],
+    why: "Con x = 5x e y = 2x: x+y = 7x y x−y = 3x. La fórmula 2·senx·cosy = sen(x+y) + sen(x−y) da sen7x + sen3x." },
+  { tema: "Producto a suma o diferencia · Intermedia",
+    text: "Calcula:<br><b>S = 2·sen43°·cos13° − sen56°</b>",
+    correct: "1/2",
+    wrong: ["1", "0", "√3/2"],
+    why: "2·sen43°·cos13° = sen56° + sen30°. Entonces S = sen56° + sen30° − sen56° = sen30° = 1/2." },
+  { tema: "Suma o diferencia a producto · Reto final",
+    text: "Calcula el valor de:<br><span class=\"frac\"><span>cos75° + cos15°</span><span>cos75° − cos15°</span></span>",
+    correct: "−√3",
+    wrong: ["√3", "−√3/3", "−1"],
+    why: "Numerador: 2·cos45°·cos30°. Denominador: −2·sen45°·sen30°. Al dividir: −(cos45°/sen45°)·(cos30°/sen30°) = −1·√3 = −√3." }
+];
+
+var CHEAT_HTML =
+  '<div class="f"><b>Ángulo triple</b></div>' +
+  '<div class="f">sen3θ = 3senθ − 4sen³θ</div>' +
+  '<div class="f">cos3θ = 4cos³θ − 3cosθ</div>' +
+  '<div class="f">tan3θ = (3tanθ − tan³θ) / (1 − 3tan²θ)</div>' +
+  '<div class="f">4sen³θ = 3senθ − sen3θ &nbsp;·&nbsp; 4cos³θ = 3cosθ + cos3θ</div>' +
+  '<div class="f"><b>Suma o diferencia → producto</b></div>' +
+  '<div class="f">senA + senB = 2·sen((A+B)/2)·cos((A−B)/2)</div>' +
+  '<div class="f">senA − senB = 2·cos((A+B)/2)·sen((A−B)/2)</div>' +
+  '<div class="f">cosA + cosB = 2·cos((A+B)/2)·cos((A−B)/2)</div>' +
+  '<div class="f">cosA − cosB = −2·sen((A+B)/2)·sen((A−B)/2)</div>' +
+  '<div class="f"><b>Producto → suma o diferencia</b></div>' +
+  '<div class="f">2·senx·cosy = sen(x+y) + sen(x−y)</div>' +
+  '<div class="f">2·cosx·cosy = cos(x+y) + cos(x−y)</div>' +
+  '<div class="f">2·senx·seny = cos(x−y) − cos(x+y)</div>';
+
+var LETTERS = ["A","B","C","D"];
+var BEST_KEY = "retoFinalTrigo4to";
+var TOTAL = QUESTIONS.length;
+var S = null;
+
+function $(id){ return document.getElementById(id); }
+function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function safeGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function safeSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function show(id){ ["s-start","s-game","s-end"].forEach(function(s){ $(s).classList.toggle("hidden", s!==id); }); window.scrollTo(0,0); }
+function plain(h){ return h.replace(/<br>/g," ").replace(/<[^>]+>/g,""); }
+
+function paintBest(){
+  var b = safeGet(BEST_KEY);
+  $("best").textContent = (b!==null) ? "Tu mejor puntaje en este equipo: " + b + "/" + TOTAL : "";
+}
+
+function startGame(){
+  var name = $("name").value.replace(/\s+/g," ").trim();
+  S = { i:0, hits:0, answered:false, opts:[], log:[], name:name };
+  show("s-game"); renderQuestion();
+}
+
+function renderQuestion(){
+  var q = QUESTIONS[S.i];
+  S.answered = false;
+  S.opts = shuffle([{t:q.correct,c:true}].concat(q.wrong.map(function(t){ return {t:t,c:false}; })));
+  $("count").textContent = "Pregunta " + (S.i+1) + " de " + TOTAL;
+  $("pts").textContent = "Aciertos: " + S.hits;
+  $("prog").style.width = (S.i/TOTAL*100) + "%";
+  $("qtext").innerHTML = q.text;
+  var box = $("opts"); box.innerHTML = "";
+  S.opts.forEach(function(o,k){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "opt";
+    var key = document.createElement("span"); key.className = "k"; key.textContent = LETTERS[k];
+    var t = document.createElement("span"); t.className = "t"; t.textContent = o.t;
+    b.appendChild(key); b.appendChild(t);
+    b.addEventListener("click", function(){ choose(k); });
+    box.appendChild(b);
+  });
+  $("fb").className = "fb hidden"; $("fb").innerHTML = "";
+  $("btn-next").classList.add("hidden");
+  $("qtext").focus({preventScroll:true});
+}
+
+function choose(k){
+  if(S.answered) return;
+  S.answered = true;
+  var q = QUESTIONS[S.i], pick = S.opts[k], right = pick.c;
+  Array.prototype.forEach.call($("opts").querySelectorAll(".opt"), function(b,idx){
+    b.disabled = true;
+    if(S.opts[idx].c) b.classList.add("ok");
+    else if(idx===k) b.classList.add("bad");
+    else b.classList.add("dim");
+  });
+  if(right) S.hits++;
+  S.log.push({ i:S.i, right:right, chosen:pick.t });
+  $("pts").textContent = "Aciertos: " + S.hits;
+  var fb = $("fb");
+  fb.className = "fb " + (right ? "ok" : "bad");
+  fb.innerHTML = "<h3></h3><p></p>";
+  fb.querySelector("h3").textContent = right ? "¡Correcto! 🎉" : "Todavía no. Mira cómo se resuelve:";
+  fb.querySelector("p").textContent = q.why;
+  var nb = $("btn-next");
+  nb.textContent = (S.i===TOTAL-1) ? "Ver mi resultado" : "Siguiente →";
+  nb.classList.remove("hidden");
+  nb.focus({preventScroll:false});
+}
+
+function nextQ(){
+  if(S.i >= TOTAL-1){ finish(); return; }
+  S.i++; renderQuestion(); window.scrollTo(0,0);
+}
+
+function finish(){
+  var h = S.hits, rate, msg;
+  show("s-end");
+  $("who").textContent = S.name ? "Alumno/a: " + S.name : "";
+  $("final").textContent = h + " / " + TOTAL;
+  if(h===TOTAL){ rate="🏆 ¡Maestro/a de la trigonometría!"; msg="Puntaje perfecto. Ahora intenta lograrlo sin abrir el cuadro de fórmulas."; }
+  else if(h>=8){ rate="⭐ ¡Casi perfecto!"; msg="Revisa lo que fallaste en el solucionario y vuelve a jugar para llegar a 10."; }
+  else if(h>=6){ rate="👍 Vas muy bien"; msg="Repasa las fórmulas, corrige tu hoja con el solucionario y juega otra vez."; }
+  else { rate="💪 Sigue practicando"; msg="Abre el cuadro de fórmulas, lee cada explicación y vuelve a intentarlo. ¡Cada partida te hace mejorar!"; }
+  $("rate").textContent = rate; $("msg").textContent = msg;
+  var prev = safeGet(BEST_KEY), prevN = (prev===null) ? -1 : parseInt(prev,10);
+  if(h>prevN) safeSet(BEST_KEY, String(h));
+  $("bestline").textContent = "Mejor puntaje en este equipo: " + Math.max(h,prevN) + "/" + TOTAL;
+  var box = $("sols"); box.innerHTML = "";
+  QUESTIONS.forEach(function(q,i){
+    var entry = S.log.filter(function(x){ return x.i===i; })[0];
+    var d = document.createElement("div"); d.className = "sol";
+    var n = document.createElement("div"); n.className = "n";
+    n.textContent = (entry && entry.right ? "✅ " : "❌ ") + (i+1) + ". " + plain(q.text);
+    var st = document.createElement("div"); st.className = "st"; st.textContent = q.tema;
+    var a = document.createElement("div"); a.className = "a"; a.textContent = "Respuesta: " + q.correct;
+    var w = document.createElement("div"); w.className = "w"; w.textContent = q.why;
+    d.appendChild(n); d.appendChild(st); d.appendChild(a); d.appendChild(w);
+    box.appendChild(d);
+  });
+}
+
+$("cheat-start").innerHTML = CHEAT_HTML;
+$("cheat-game").innerHTML = CHEAT_HTML;
+paintBest();
+$("btn-start").addEventListener("click", startGame);
+$("btn-next").addEventListener("click", nextQ);
+$("btn-again").addEventListener("click", function(){ $("name").value = S ? S.name : ""; startGame(); });
+$("btn-home").addEventListener("click", function(){ paintBest(); show("s-start"); });
+$("name").addEventListener("keydown", function(e){ if(e.key==="Enter") startGame(); });
+document.addEventListener("keydown", function(e){
+  if(!S || $("s-game").classList.contains("hidden") || S.answered) return;
+  if(e.ctrlKey || e.metaKey || e.altKey) return;
+  var k = e.key.toLowerCase(), idx = -1;
+  if(k>="1" && k<="4") idx = parseInt(k,10)-1;
+  else if(k>="a" && k<="d") idx = k.charCodeAt(0)-97;
+  if(idx>=0 && idx<S.opts.length) choose(idx);
+});
+</script>
+</body>
+</html>
